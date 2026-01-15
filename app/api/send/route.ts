@@ -1,15 +1,6 @@
 import { Resend } from "resend";
 
 export const runtime = "nodejs";
-export async function POST(req: Request) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-const resend = new Resend(apiKey);
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -26,6 +17,13 @@ function escapeHtml(input: string) {
 
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return Response.json({ ok: false, error: "Missing RESEND_API_KEY" }, { status: 500 });
+    }
+
+    const resend = new Resend(apiKey);
+
     const { name, company, email, message } = await req.json();
 
     // Validate
@@ -35,19 +33,14 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
     if (!isValidEmail(email)) {
       return Response.json({ ok: false, error: "Invalid email." }, { status: 400 });
     }
 
     const to = "ermir@lirimi.com";
-const fromEmail = "onboarding@resend.dev";
+    const fromEmail = "onboarding@resend.dev"; // later you can move to env if you want
 
-if (!to || !fromEmail) {
-  return Response.json(
-    { ok: false, error: "Missing CONTACT_TO_EMAIL or CONTACT_FROM_EMAIL env vars." },
-    { status: 500 }
-  );
-}
     const subject = `New contact message from ${name}${company ? ` (${company})` : ""}`;
 
     const html = `
@@ -70,25 +63,21 @@ if (!to || !fromEmail) {
     const result = await resend.emails.send({
       from: `Website Contact <${fromEmail}>`,
       to,
-      replyTo: email, // IMPORTANT: so you can hit reply and respond to the sender
+      replyTo: email,
       subject,
       html,
     });
 
-    if ("error" in result && result.error) {
-      return Response.json({ ok: false, error: result.error }, { status: 400 });
+    // Resend returns either data or error depending on version
+    if ((result as any)?.error) {
+      return Response.json({ ok: false, error: (result as any).error }, { status: 400 });
     }
 
-    return Response.json({ ok: true, id: result.data?.id });
+    return Response.json({ ok: true, id: (result as any)?.data?.id }, { status: 200 });
   } catch (err: any) {
     return Response.json(
       { ok: false, error: err?.message ?? "Server error" },
       { status: 500 }
     );
-    return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
-}
   }
 }
