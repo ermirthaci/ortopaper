@@ -10,7 +10,7 @@ export function ProductsSection() {
   const products = [
     {
       nameKey: "products.thase-letre",
-      image: "/thase.png",
+      image: "/images/thase.png",
       slug: "thase-letre",
     },
     {

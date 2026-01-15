@@ -1,8 +1,15 @@
 import { Resend } from "resend";
 
 export const runtime = "nodejs";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+export async function POST(req: Request) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+const resend = new Resend(apiKey);
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -78,5 +85,10 @@ if (!to || !fromEmail) {
       { ok: false, error: err?.message ?? "Server error" },
       { status: 500 }
     );
+    return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
   }
 }

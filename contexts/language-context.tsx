@@ -30,7 +30,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Content Section
     "content.title": "Rooted in Sustainability, Wrapped in Purpose",
-    "content.description": "Ortopaper is a paper production company that has been operating since 2014.",
+    "content.description": "Ortopaper is a paper packaging production company established in 2014 as part of Lirimi Group. Ortopaper produces a variety of packaging solutions marked by quality, innovation, and sustainability. With an unwavering commitment to quality, innovation, and the environment, the company specializes in producing a wide range of paper-based packaging tailored to meet the unique demands of the industrial and food sectors.",
     "content.cta": "About Us",
 
     // Products Section
