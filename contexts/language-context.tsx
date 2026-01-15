@@ -255,20 +255,19 @@ const translations: Record<Language, Record<string, string>> = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en")
+  const [language, setLanguageState] = useState<Language>("sq")
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
-    try {
-      const saved = localStorage.getItem("language") as Language
-      if (saved && (saved === "en" || saved === "sq")) {
-        setLanguageState(saved)
-      }
-    } catch (e) {
-      // localStorage not available
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("language") as Language
+    if (stored && (stored === "en" || stored === "sq")) {
+      setLanguage(stored)
     }
-  }, [])
+    // If nothing stored, it will keep the default "sq"
+    setMounted(true)
+  }
+}, [])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
