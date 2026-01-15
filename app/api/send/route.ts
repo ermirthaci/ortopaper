@@ -39,8 +39,8 @@ export async function POST(req: Request) {
       return Response.json({ ok: false, error: "Invalid email." }, { status: 400 });
     }
 
-    const to = process.env.CONTACT_TO_EMAIL;
-const fromEmail = process.env.CONTACT_FROM_EMAIL;
+    const to = "ermir@lirimi.com";
+const fromEmail = "onboarding@resend.dev";
 
 if (!to || !fromEmail) {
   return Response.json(
